@@ -8,6 +8,11 @@ const {
   fetchUser,
   fetchFavorites,
 } = require("./db");
+const express = require("express");
+app = express();
+app.use(require("morgan")("dev"));
+app.use(express.json());
+const port = 3000;
 
 const init = async () => {
   await client.connect();
@@ -37,6 +42,7 @@ const init = async () => {
   ]);
 
   console.log(await fetchFavorites(James.id));
+  app.listen(port, () => console.log(`listening on port ${port}`));
 };
 
 init();
