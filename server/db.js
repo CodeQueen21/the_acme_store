@@ -52,6 +52,14 @@ const createProduct = async ({ name }) => {
   return response.rows[0];
 };
 
+const createFavorites = async ({ user_id, product_id }) => {
+  const SQL = `
+  INSERT INTO favorites(id, user_id, product_id) VALUES($1, $2, $3) RETURNING *
+  `;
+  const response = await client.query(SQL, [uuid.v4(), user_id, product_id]);
+  return response.rows[0];
+};
+
 const fetchProducts = async () => {
   const SQL = `
     SELECT * FROM products;
@@ -68,11 +76,22 @@ const fetchUser = async () => {
   return response.rows;
 };
 
+const fetchFavorites = async (id) => {
+  const SQL = `
+      SELECT * FROM favorites
+      WHERE user_id = $1
+      `;
+  const response = await client.query(SQL, [id]);
+  return response.rows;
+};
+
 module.exports = {
   client,
   createTables,
   createUser,
   createProduct,
+  createFavorites,
   fetchUser,
   fetchProducts,
+  fetchFavorites,
 };
