@@ -13,7 +13,55 @@ const express = require("express");
 app = express();
 app.use(require("morgan")("dev"));
 app.use(express.json());
-const port = 3000;
+const port = process.env.PORT || 3000;
+
+app.get("/api/users", async (req, res, next) => {
+  try {
+    res.send(await fetchUser());
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get("/api/products", async (req, res, next) => {
+  try {
+    res.send(await fetchProducts());
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get("/api/users/:id/favorites", async (req, res, next) => {
+  try {
+    res.send(await fetchFavorites(req.params.id));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post("/api/users/:id/favorites", async (req, res, next) => {
+  try {
+    res
+      .status(201)
+      .send(
+        await createFavorites({
+          user_id: req.params.id,
+          product_id: req.body.product_id,
+        })
+      );
+  } catch (ex) {
+    next(ex);
+  }
+});
+
+app.delete("/api/users/:userId/favorites/:id", async (req, res, next) => {
+  try {
+    await deleteFavorite({ user_id: req.params.userId, id: req.params.id });
+    res.sendStatus(204);
+  } catch (ex) {
+    next(ex);
+  }
+});
 
 const init = async () => {
   await client.connect();
